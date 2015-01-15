@@ -2,7 +2,6 @@
 #define	BERGNUM_H
 
 #include "mylist.h"
-
 using namespace std;
 
 class Bergnum 
