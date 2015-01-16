@@ -5,12 +5,14 @@ using namespace std;
 
 int main(int argc, char** argv) 
 {
+
+	Bergnum a(20);
+	cout << a;
+
 	Bergnum b(5);
-	cout << b;
+	cout << a/b;
 
-	cout << b.toInt();
-
-	
+	cout << endl;
 	system("pause");
 	return 0;
 }

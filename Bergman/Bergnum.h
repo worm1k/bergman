@@ -7,31 +7,29 @@ using namespace std;
 class Bergnum 
 {
 private:
-
-
-public:
 	void inc();
 	void normalise();
-	void decompose(mylist*);
+	void decompose(mylist*) const;
+public:
 	mylist* start;
 	mylist* zero;
 	mylist* test;
 
 	Bergnum();
 	Bergnum(const int);
-	Bergnum(Bergnum&);
+	Bergnum(const Bergnum&);
 
 	~Bergnum() {};
 
 	void sayhello();
 	void myprint(mylist* curr);
-	int toInt();
-	
-	
+	int toInt() const;
 };
 
 ostream& operator<<(ostream &, const Bergnum &);
 Bergnum operator+(const Bergnum&, const Bergnum&);
 Bergnum operator-(const Bergnum&, const Bergnum&);
+Bergnum operator*(const Bergnum&, const Bergnum&);
+Bergnum operator/(const Bergnum&, const Bergnum&);
 
 #endif
