@@ -15,11 +15,26 @@ struct mylist
 		isTrue = false;
 	}
 
+	// deprived
 	mylist(mylist* a, mylist* b, int pow, bool c) {
-		less = b;
 		more = a;
+		less = b;
 		power = pow;
 		isTrue = c;
+	}
+
+	mylist(int newLeft, mylist* right) {
+		less = right;
+		power = right->power + 1;
+		isTrue = false;
+		more = 0;
+	}
+
+	mylist(mylist* left, int newRight) {
+		more = left;
+		power = left->power - 1;
+		isTrue = false;
+		less = 0;
 	}
 };
 

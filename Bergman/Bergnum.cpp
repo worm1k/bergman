@@ -2,9 +2,9 @@
 
 #include "Bergnum.h";
 void myprint(mylist* curr);
-Bergnum::Bergnum() : start(new mylist())
+Bergnum::Bergnum() : start(new mylist(0,0,4,1))
 {
-	/*
+	
 	mylist* curr = start;
 
 	curr->less = new mylist(curr, 0, 3, 1);
@@ -19,12 +19,13 @@ Bergnum::Bergnum() : start(new mylist())
 	curr->less = new mylist(curr, 0, 0, 0);
 	curr = curr->less;
 	
-	curr->less = new mylist(curr, 0, -1, 0);
+	curr->less = new mylist(curr, 0, -1, 1);
 	curr = curr->less;
+	test = curr;
 
-	curr->less = new mylist(curr, 0, -2, 1);
+	curr->less = new mylist(curr, 0, -2, 0);
 	curr = curr->less;
-	*/
+	
 }
 
 Bergnum::Bergnum(const int val)
@@ -53,28 +54,59 @@ void Bergnum::write1(mylist* ptr)
 }
 
 // 100 -> 011
-void Bergnum::decompose(mylist* ptr)
+void Bergnum::decompose(mylist* curr)
 {
-	if (ptr->less->less->isTrue) {
-		decompose(ptr->less->less);
+	// 1 • • 
+	if (!curr->less) {
+		curr->less = new mylist(curr,0);
+		curr->less->less = new mylist(curr->less, 0);
+	} // 1 0 • 
+	else if (!curr->less->isTrue && !curr->less->less) {
+		curr->less->isTrue = true;
+		curr->less->less = new mylist(curr->less, 0);
+	} // 1 0 0
+	else if (!curr->less->isTrue && !curr->less->less->isTrue) {
+		// Well, well, well...
 	}
-	ptr->isTrue = false;
-	ptr->less->isTrue = true;
-	ptr->less->less->isTrue = true;
+	else if (curr->less->less->isTrue) {
+		decompose(curr->less->less);
+	}
+	curr->isTrue = false;
+	curr->less->isTrue = true;
+	curr->less->less->isTrue = true;
 
+}
+
+void Bergnum::normalise()
+{
+	mylist* curr = start;
+	for (;;) {
+		if (!curr->less) return;
+		if (curr->isTrue && curr->less->isTrue) {
+			if (!curr->more) {
+				curr->more = new mylist(0, curr);
+				start = curr->more;
+			}
+			curr->more->isTrue = true;
+			curr->isTrue = false;
+			curr->less->isTrue = false;
+			normalise();
+		}
+		curr = curr->less;
+	}
 }
 
 ostream& operator<<(ostream &os, const Bergnum &u)
 {
 	mylist* curr = u.start;
 	for (;;) {
-		//os << curr->isTrue;
+		os << curr->isTrue; /*
 		os << " bool: " << curr->isTrue << endl
 			<< "power: " << curr->power << endl
 			//<< " more: " << curr->more << endl
 			<< "  ptr: " << curr << endl
 			<< " less: " << curr->less << endl
-			<< "=============================\n";
+			<< "=============================\n";*/
 		if (curr->power == 0) {
 			os << '.';
 			if (!curr->less) {
@@ -90,9 +122,8 @@ ostream& operator<<(ostream &os, const Bergnum &u)
 	return os;
 }
 
-/** very useful func
- *
-void myprint(mylist* curr)
+// very useful func
+void Bergnum::myprint(mylist* curr)
 {
 	for (;;) {
 		//os << curr->isTrue;
@@ -115,4 +146,3 @@ void myprint(mylist* curr)
 		}
 	}
 }
-*/

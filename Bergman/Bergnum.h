@@ -10,11 +10,11 @@ private:
 
 	void inc();
 	void normalise();
-	void write1(mylist*);
-	void decompose(mylist*);
 
 public:
+	void decompose(mylist*);
 	mylist* start;
+	mylist* test;
 
 	Bergnum();
 	Bergnum(const int);
@@ -23,9 +23,9 @@ public:
 	~Bergnum() {};
 
 	void sayhello();
-
+	void myprint(mylist* curr);
 	int toInt();
-
+	
 	
 };
 

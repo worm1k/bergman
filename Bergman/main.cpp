@@ -6,9 +6,11 @@ using namespace std;
 int main(int argc, char** argv) 
 {
 	Bergnum b = Bergnum();
-	b.sayhello();
 
-	//cout << b;
+	cout << b;
+	b.decompose(b.test);
+	cout << b;
+	
 	system("pause");
 	return 0;
 }
