@@ -5,11 +5,11 @@ using namespace std;
 
 int main(int argc, char** argv) 
 {
-	Bergnum b = Bergnum();
-	for (int i = 0; i < 10; ++i) {
-		cout << b;
-		b.inc();
-	}
+	Bergnum b(5);
+	cout << b;
+
+	cout << b.toInt();
+
 	
 	system("pause");
 	return 0;

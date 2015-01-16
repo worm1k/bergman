@@ -30,14 +30,31 @@ Bergnum::Bergnum() : start(new mylist())
 	
 }
 
-Bergnum::Bergnum(const int val)
+Bergnum::Bergnum(const int val) : start(new mylist())
 {
-
+	zero = start;
+	for (int i = 0; i < val; ++i) {
+		inc();
+	}
 }
 
-Bergnum::Bergnum(Bergnum& orig)
+Bergnum::Bergnum(Bergnum& u)
 {
+	mylist* orig = u.start;
+	start = new mylist(0, 0, orig->power, orig->isTrue);
+	mylist* curr = start;
 
+	for (;;) {
+		if (!orig->less) {
+			break;
+		}
+		curr->less = new mylist(curr, 0, orig->less->power, orig->less->isTrue);
+		curr = curr->less;
+		orig = orig->less;
+		if (curr->power == 0) {
+			zero = curr;
+		}
+	}
 }
 
 void Bergnum::sayhello(){ cout << "hello\n"; };
@@ -94,17 +111,50 @@ void Bergnum::inc()
 	normalise();
 }
 
+int Bergnum::toInt() 
+{
+	Bergnum b(*this);
+	mylist* curr;
+	mylist* localzero = b.zero;
+	int res(0);
+
+	for (;;) {
+		curr = localzero;
+		if (localzero->isTrue) {
+			localzero->isTrue = false;
+			res++;
+			b.normalise();
+			continue;
+		} 
+		for (;;) {
+			if (!curr->more) {
+				return res;
+			}
+			else if (curr->more->isTrue){
+				decompose(curr->more);
+				break;
+			}
+			else if (!curr->more->isTrue) {
+				curr = curr->more;
+			}
+		}
+	}
+	return res;
+}
+
 ostream& operator<<(ostream &os, const Bergnum &u)
 {
 	mylist* curr = u.start;
 	for (;;) {
-		os << curr->isTrue; /*
+//		os << curr->isTrue; 
+//		/*
 		os << " bool: " << curr->isTrue << endl
 			<< "power: " << curr->power << endl
 			//<< " more: " << curr->more << endl
 			<< "  ptr: " << curr << endl
 			<< " less: " << curr->less << endl
-			<< "=============================\n";*/
+			<< "=============================\n";
+//			*/
 		if (curr->power == 0) {
 			os << '.';
 			if (!curr->less) {
@@ -113,7 +163,7 @@ ostream& operator<<(ostream &os, const Bergnum &u)
 		}
 		curr = curr->less;
 		if (!curr) {
-			os << endl << "Bergnum printed" << endl;
+			os << endl;
 			break;
 		}
 	}
