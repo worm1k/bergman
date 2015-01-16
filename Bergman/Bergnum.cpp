@@ -2,9 +2,10 @@
 
 #include "Bergnum.h";
 void myprint(mylist* curr);
-Bergnum::Bergnum() : start(new mylist(0,0,4,1))
+Bergnum::Bergnum() : start(new mylist())
 {
-	
+	zero = start;
+	/*
 	mylist* curr = start;
 
 	curr->less = new mylist(curr, 0, 3, 1);
@@ -18,13 +19,14 @@ Bergnum::Bergnum() : start(new mylist(0,0,4,1))
 	
 	curr->less = new mylist(curr, 0, 0, 0);
 	curr = curr->less;
+	zero = curr;
 	
 	curr->less = new mylist(curr, 0, -1, 1);
 	curr = curr->less;
 	test = curr;
 
 	curr->less = new mylist(curr, 0, -2, 0);
-	curr = curr->less;
+	curr = curr->less;*/
 	
 }
 
@@ -39,19 +41,6 @@ Bergnum::Bergnum(Bergnum& orig)
 }
 
 void Bergnum::sayhello(){ cout << "hello\n"; };
-
-// writes 1 in ptr position
-void Bergnum::write1(mylist* ptr) 
-{
-	if (!ptr->isTrue) {
-		ptr->isTrue = true;
-		return;
-	}
-	else {
-		decompose(ptr);
-		write1(ptr);
-	}
-}
 
 // 100 -> 011
 void Bergnum::decompose(mylist* curr)
@@ -83,7 +72,7 @@ void Bergnum::normalise()
 	for (;;) {
 		if (!curr->less) return;
 		if (curr->isTrue && curr->less->isTrue) {
-			if (!curr->more) {
+			if (!curr->more) { // • 1 1
 				curr->more = new mylist(0, curr);
 				start = curr->more;
 			}
@@ -94,6 +83,15 @@ void Bergnum::normalise()
 		}
 		curr = curr->less;
 	}
+}
+
+void Bergnum::inc()
+{
+	if (zero->isTrue) {
+		decompose(zero);
+	}
+	zero->isTrue = true;
+	normalise();
 }
 
 ostream& operator<<(ostream &os, const Bergnum &u)

@@ -6,10 +6,10 @@ using namespace std;
 int main(int argc, char** argv) 
 {
 	Bergnum b = Bergnum();
-
-	cout << b;
-	b.decompose(b.test);
-	cout << b;
+	for (int i = 0; i < 10; ++i) {
+		cout << b;
+		b.inc();
+	}
 	
 	system("pause");
 	return 0;

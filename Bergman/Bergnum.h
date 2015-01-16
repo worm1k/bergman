@@ -8,12 +8,13 @@ class Bergnum
 {
 private:
 
-	void inc();
-	void normalise();
 
 public:
+	void inc();
+	void normalise();
 	void decompose(mylist*);
 	mylist* start;
+	mylist* zero;
 	mylist* test;
 
 	Bergnum();
