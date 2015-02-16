@@ -1,5 +1,4 @@
 #include <iostream>
-#include "NegativeNumberException.h";
 #include "Bergnum.h";
 void myprint(mylist* curr);
 Bergnum::Bergnum() : start(new mylist())
@@ -9,18 +8,13 @@ Bergnum::Bergnum() : start(new mylist())
 
 Bergnum::Bergnum(const int val)
 {
-	try {
-		if (val < 0) {
-			throw new NegativeNumberException;
-		}
-		start = new mylist();
-		zero = start;
-		for (int i = 0; i < val; ++i) {
-			inc();
-		}
+	if (val < 0) {
+		;
 	}
-	catch (...) {
-		cout << "Negative numbers not supported" << endl;
+	start = new mylist();
+	zero = start;
+	for (int i = 0; i < val; ++i) {
+		inc();
 	}
 }
 
@@ -43,23 +37,22 @@ Bergnum::Bergnum(const Bergnum& u)
 	}
 }
 
-void Bergnum::sayhello(){ cout << "hello\n"; };
 
 // 100 -> 011
 void Bergnum::decompose(mylist* curr) const
 {
-	// 1 • • 
+	  // 1 • • -> 1 0 0
 	if (!curr->less) {
 		curr->less = new mylist(curr,0);
 		curr->less->less = new mylist(curr->less, 0);
-	} // 1 0 • 
+	} // 1 0 • -> 1 0 0
 	else if (!curr->less->isTrue && !curr->less->less) {
 		curr->less->isTrue = true;
 		curr->less->less = new mylist(curr->less, 0);
 	} // 1 0 0
 	else if (!curr->less->isTrue && !curr->less->less->isTrue) {
 		// Well, well, well...
-	} // 1 0 1
+	} // 1 0 1 -> 1 0 0
 	else if (curr->less->less->isTrue) {
 		decompose(curr->less->less);
 	}
@@ -99,17 +92,24 @@ void Bergnum::inc()
 
 int Bergnum::toInt() const
 {
+	// can't touch *this 
 	Bergnum b(*this);
 	mylist* curr;
+	// Access to zero by local var, not by object
 	mylist* localzero = b.zero;
 	int res(0);
 
-	/* Algorythm
+	/* Algorythm:
 	* 1) go to Zero power
-	* 2) if (true) make it false; res++; normalise(); goto 1)
+	* 2) if (zero_power == true) {
+	*		make it false; 
+	*		res = res + 1; 
+	*		b.normalise(); 
+	*		goto 1;
+	*	 }
 	* 3) search for the closest 1 on the the left
-	*	4) if found, decompose it, goto 1)
-	*	5) if found NULL ptr, return res
+	*	3.1) if found, decompose it, goto 1)
+	*	3.2) if found NULL ptr, return res
 	*/
 	for (;;) {
 		curr = localzero;
@@ -120,6 +120,7 @@ int Bergnum::toInt() const
 			continue;
 		} 
 		for (;;) {
+			// !!! this condition must be first
 			if (!curr->more) {
 				return res;
 			}
@@ -164,6 +165,7 @@ ostream& operator<<(ostream &os, const Bergnum &u)
 }
 
 // very useful func
+// but deprived...
 void Bergnum::myprint(mylist* curr)
 {
 	for (;;) {
@@ -195,16 +197,14 @@ Bergnum operator+(const Bergnum& a, const Bergnum& b)
 
 Bergnum operator-(const Bergnum& a, const Bergnum& b)
 {
-	try {
 
-		if (b.toInt() > a.toInt()) {
-			throw new NegativeNumberException;
-		}
-		return Bergnum(a.toInt() - b.toInt());
+	if (b.toInt() > a.toInt()) {
+		cout << "Negative numbers are not supported" << endl
+			 << "You'll get ZERO!" << endl;
+		return Bergnum(0);
 	}
-	catch (...) {
-		cout << "Negative numbers not supported" << endl;
-	}
+	return Bergnum(a.toInt() - b.toInt());
+	
 }
 
 Bergnum operator*(const Bergnum& a, const Bergnum& b)

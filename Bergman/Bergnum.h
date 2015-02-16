@@ -11,18 +11,28 @@ private:
 	void normalise();
 	void decompose(mylist*) const;
 public:
+	// ptr to number with the highest power
 	mylist* start;
-	mylist* zero;
-	mylist* test;
 
+	// ptr to number with the power == 0
+	mylist* zero;
+	void myFunc() {
+		cout << start->more << endl;
+//			<< (start->more->isTrue == true)
+//		<< (start->more->isTrue == false);
+	};
+	// Constructors
 	Bergnum();
 	Bergnum(const int);
 	Bergnum(const Bergnum&);
 
+	// Destructor
 	~Bergnum() {};
 
-	void sayhello();
+	// print function
 	void myprint(mylist* curr);
+
+	// returns int value
 	int toInt() const;
 };
 

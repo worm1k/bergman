@@ -1,16 +1,15 @@
 #include <iostream>
+#include <fstream>
 #include "Bergnum.h"
 
 using namespace std;
 
 int main(int argc, char** argv) 
 {
+	Bergnum _1(100);
+	Bergnum _2(200);
 
-	Bergnum a(20);
-	cout << a;
-
-	Bergnum b(5);
-	cout << a/b;
+	cout << _1 - _2;
 
 	cout << endl;
 	system("pause");
