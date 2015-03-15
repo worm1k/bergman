@@ -65,8 +65,9 @@ void Bergnum::normalise()
 	mylist* curr = start;
 	for (;;) {
 		if (!curr->less) return;
+		
 		// 0 1 1 -> 1 0 0
-		if (curr->multiplier && curr->less->multiplier) {
+		if (curr->multiplier > 0 && curr->less->multiplier > 0) {
 			if (!curr->more) { // • 1 1
 				curr->more = new mylist(0, curr);
 				start = curr->more;
@@ -75,6 +76,38 @@ void Bergnum::normalise()
 			--(curr->multiplier);
 			--(curr->less->multiplier);
 			curr = start;
+		}
+
+		// 0 2 0 0 -> 1 0 0 1
+		if (curr->multiplier > 1) {
+			if (!curr->more) { // • 2
+				curr->more = new mylist(0, curr);
+				start = curr->more;
+			}
+			if (!curr->less) { // 2 •
+				curr->less = new mylist(curr, 0);
+			}
+			if (!curr->less->less) { // 2 0 •
+				curr->less->less = new mylist(curr->less, 0);
+			}
+			++(curr->more->multiplier);
+			curr->multiplier -= 2;
+			++(curr->less->less);
+			curr = start;
+		}
+
+		// 0 -1 0 -> -1 0 1
+		if (curr->multiplier < 0) {
+			if (!curr->more) { // • -1 
+				cout << "Invalid number error\n";
+				exit(0);
+			}
+			if (!curr->less) { // -1 •
+				curr->less = new mylist(curr, 0);
+			}
+			--(curr->more->multiplier);
+			++(curr->multiplier);
+			++(curr->less->multiplier);
 		}
 		curr = curr->less;
 	}
