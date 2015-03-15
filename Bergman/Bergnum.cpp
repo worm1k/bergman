@@ -21,14 +21,14 @@ Bergnum::Bergnum(const int val)
 Bergnum::Bergnum(const Bergnum& u)
 {
 	mylist* orig = u.start;
-	start = new mylist(0, 0, orig->power, orig->isTrue);
+	start = new mylist(0, 0, orig->power, orig->multiplier);
 	mylist* curr = start;
 
 	for (;;) {
 		if (!orig->less) {
 			break;
 		}
-		curr->less = new mylist(curr, 0, orig->less->power, orig->less->isTrue);
+		curr->less = new mylist(curr, 0, orig->less->power, orig->less->multiplier);
 		curr = curr->less;
 		orig = orig->less;
 		if (curr->power == 0) {
@@ -46,19 +46,18 @@ void Bergnum::decompose(mylist* curr) const
 		curr->less = new mylist(curr,0);
 		curr->less->less = new mylist(curr->less, 0);
 	} // 1 0 • -> 1 0 0
-	else if (!curr->less->isTrue && !curr->less->less) {
-		curr->less->isTrue = true;
+	else if (curr->less->multiplier == 0 && !curr->less->less) {
 		curr->less->less = new mylist(curr->less, 0);
 	} // 1 0 0
-	else if (!curr->less->isTrue && !curr->less->less->isTrue) {
+	else if (curr->less->multiplier == 0 && curr->less->less->multiplier == 0) {
 		// Well, well, well...
 	} // 1 0 1 -> 1 0 0
-	else if (curr->less->less->isTrue) {
+	else if (curr->less->less->multiplier != 0) {
 		decompose(curr->less->less);
 	}
-	curr->isTrue = false;
-	curr->less->isTrue = true;
-	curr->less->less->isTrue = true;
+	--(curr->multiplier);
+	++(curr->less->multiplier);
+	++(curr->less->less->multiplier);
 }
 
 void Bergnum::normalise()
@@ -66,15 +65,16 @@ void Bergnum::normalise()
 	mylist* curr = start;
 	for (;;) {
 		if (!curr->less) return;
-		if (curr->isTrue && curr->less->isTrue) {
+		// 0 1 1 -> 1 0 0
+		if (curr->multiplier && curr->less->multiplier) {
 			if (!curr->more) { // • 1 1
 				curr->more = new mylist(0, curr);
 				start = curr->more;
 			}
-			curr->more->isTrue = true;
-			curr->isTrue = false;
-			curr->less->isTrue = false;
-			normalise();
+			++(curr->more->multiplier);
+			--(curr->multiplier);
+			--(curr->less->multiplier);
+			curr = start;
 		}
 		curr = curr->less;
 	}
@@ -83,17 +83,34 @@ void Bergnum::normalise()
 // increment by 1
 void Bergnum::inc()
 {
-	if (zero->isTrue) {
+	if (zero->multiplier) {
 		decompose(zero);
 	}
-	zero->isTrue = true;
+	zero->multiplier = true;
 	normalise();
 }
 
+int Bergnum::fibonacci(const int n) {
+	if (n == 0) {
+		return 0;
+	}
+	else if (n == 1 || n == -1){
+		return 1;
+	}
+	else if (n > 1) {
+		return fibonacci(n - 1) + fibonacci(n - 2);
+	}
+	else if (n < -1) {
+		return fibonacci(n + 2) - fibonacci(n + 1);
+	}
+
+	return 0;
+}
 int Bergnum::toInt() const
 {
 	// can't touch *this 
 	Bergnum b(*this);
+	b.normalise();
 	mylist* curr;
 	// Access to zero by local var, not by object
 	mylist* localzero = b.zero;
@@ -113,8 +130,8 @@ int Bergnum::toInt() const
 	*/
 	for (;;) {
 		curr = localzero;
-		if (localzero->isTrue) {
-			localzero->isTrue = false;
+		if (localzero->multiplier > 0) {
+			--(localzero->multiplier);
 			res++;
 			b.normalise();
 			continue;
@@ -124,11 +141,11 @@ int Bergnum::toInt() const
 			if (!curr->more) {
 				return res;
 			}
-			else if (curr->more->isTrue){
+			else if (curr->more->multiplier > 0){
 				decompose(curr->more);
 				break;
 			}
-			else if (!curr->more->isTrue) {
+			else if (curr->more->multiplier == 0) {
 				curr = curr->more;
 			}
 		}
@@ -140,9 +157,9 @@ ostream& operator<<(ostream &os, const Bergnum &u)
 {
 	mylist* curr = u.start;
 	for (;;) {
-		os << curr->isTrue; 
+		os << curr->multiplier; 
 		/*
-		os << " bool: " << curr->isTrue << endl
+		os << " bool: " << curr->multiplier << endl
 			<< "power: " << curr->power << endl
 			//<< " more: " << curr->more << endl
 			<< "  ptr: " << curr << endl
@@ -169,8 +186,8 @@ ostream& operator<<(ostream &os, const Bergnum &u)
 void Bergnum::myprint(mylist* curr)
 {
 	for (;;) {
-		//os << curr->isTrue;
-		cout << " bool: " << curr->isTrue << endl
+		//os << curr->multiplier;
+		cout << " bool: " << curr->multiplier << endl
 			<< "power: " << curr->power << endl
 			//<< " more: " << curr->more << endl
 			<< "  ptr: " << curr << endl
@@ -188,6 +205,13 @@ void Bergnum::myprint(mylist* curr)
 			break;
 		}
 	}
+}
+
+void Bergnum::isValid() 
+{
+	int greatestToFibonacci;
+	mylist* current = start;
+
 }
 
 Bergnum operator+(const Bergnum& a, const Bergnum& b)

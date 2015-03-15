@@ -11,16 +11,13 @@ private:
 	void normalise();
 	void decompose(mylist*) const;
 public:
+	int fibonacci(const int);
 	// ptr to number with the highest power
 	mylist* start;
 
 	// ptr to number with the power == 0
 	mylist* zero;
-	void myFunc() {
-		cout << start->more << endl;
-//			<< (start->more->isTrue == true)
-//		<< (start->more->isTrue == false);
-	};
+
 	// Constructors
 	Bergnum();
 	Bergnum(const int);
@@ -34,6 +31,9 @@ public:
 
 	// returns int value
 	int toInt() const;
+
+	// f-function check
+	void isValid();
 };
 
 ostream& operator<<(ostream &, const Bergnum &);

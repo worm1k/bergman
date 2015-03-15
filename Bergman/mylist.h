@@ -4,7 +4,7 @@
 // Linked list
 struct mylist 
 {
-	bool isTrue;
+	int multiplier;
 	int power;
 	mylist* more;
 	mylist* less;
@@ -13,7 +13,7 @@ struct mylist
 		more = 0;
 		less = 0;
 		power = 0;
-		isTrue = false;
+		multiplier = false;
 	}
 
 	// deprived 
@@ -22,7 +22,7 @@ struct mylist
 		more = a;
 		less = b;
 		power = pow;
-		isTrue = c;
+		multiplier = c;
 	}
 
 	// int value is useless
@@ -30,7 +30,7 @@ struct mylist
 	mylist(int newLeft, mylist* right) {
 		less = right;
 		power = right->power + 1;
-		isTrue = false;
+		multiplier = false;
 		more = 0;
 	}
 
@@ -39,7 +39,7 @@ struct mylist
 	mylist(mylist* left, int newRight) {
 		more = left;
 		power = left->power - 1;
-		isTrue = false;
+		multiplier = false;
 		less = 0;
 	}
 };
