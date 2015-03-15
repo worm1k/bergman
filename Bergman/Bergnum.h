@@ -33,12 +33,15 @@ public:
 	int toInt() const;
 
 	// f-function check
-	void isValid();
+	void isValid() const;
+
+	// a + b
+	const Bergnum plus(const Bergnum&, const Bergnum&);
+	Bergnum friend operator+(const Bergnum&, const Bergnum&);
+	Bergnum friend operator-(const Bergnum&, const Bergnum&);
 };
 
 ostream& operator<<(ostream &, const Bergnum &);
-Bergnum operator+(const Bergnum&, const Bergnum&);
-Bergnum operator-(const Bergnum&, const Bergnum&);
 Bergnum operator*(const Bergnum&, const Bergnum&);
 Bergnum operator/(const Bergnum&, const Bergnum&);
 

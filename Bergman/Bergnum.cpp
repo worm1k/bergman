@@ -9,7 +9,8 @@ Bergnum::Bergnum() : start(new mylist())
 Bergnum::Bergnum(const int val)
 {
 	if (val < 0) {
-		;
+		cout << "Negative numbers are not supported\n"
+			 <<	"You will get 0\n";
 	}
 	start = new mylist();
 	zero = start;
@@ -38,7 +39,7 @@ Bergnum::Bergnum(const Bergnum& u)
 }
 
 
-// 100 -> 011
+// 1 0 0 -> 0 1 1
 void Bergnum::decompose(mylist* curr) const
 {
 	  // 1 • • -> 1 0 0
@@ -63,23 +64,11 @@ void Bergnum::decompose(mylist* curr) const
 void Bergnum::normalise()
 {
 	mylist* curr = start;
-	for (;;) {
-		if (!curr->less) return;
+	while (curr) {	
 		
-		// 0 1 1 -> 1 0 0
-		if (curr->multiplier > 0 && curr->less->multiplier > 0) {
-			if (!curr->more) { // • 1 1
-				curr->more = new mylist(0, curr);
-				start = curr->more;
-			}
-			++(curr->more->multiplier);
-			--(curr->multiplier);
-			--(curr->less->multiplier);
-			curr = start;
-		}
-
 		// 0 2 0 0 -> 1 0 0 1
 		if (curr->multiplier > 1) {
+			cout << " 0 2 0 0 -> 1 0 0 1" << endl;
 			if (!curr->more) { // • 2
 				curr->more = new mylist(0, curr);
 				start = curr->more;
@@ -90,14 +79,15 @@ void Bergnum::normalise()
 			if (!curr->less->less) { // 2 0 •
 				curr->less->less = new mylist(curr->less, 0);
 			}
-			++(curr->more->multiplier);
+			curr->more->multiplier += 1;
 			curr->multiplier -= 2;
-			++(curr->less->less);
+			curr->less->less->multiplier += 1;
 			curr = start;
 		}
 
 		// 0 -1 0 -> -1 0 1
 		if (curr->multiplier < 0) {
+			cout << " 0 -1 0 -> -1 0 1" << endl;
 			if (!curr->more) { // • -1 
 				cout << "Invalid number error\n";
 				exit(0);
@@ -108,6 +98,23 @@ void Bergnum::normalise()
 			--(curr->more->multiplier);
 			++(curr->multiplier);
 			++(curr->less->multiplier);
+			curr = start;
+
+		}
+		// 0 1 1 -> 1 0 0
+		if (curr->multiplier > 0 && curr->less) {
+			if (curr->less->multiplier > 0) {
+				cout << " 0 1 1 -> 1 0 0" << endl;
+				if (!curr->more) { // • 1 1
+					curr->more = new mylist(0, curr);
+					start = curr->more;
+				}
+				++(curr->more->multiplier);
+				--(curr->multiplier);
+				--(curr->less->multiplier);
+				curr = start;
+
+			}
 		}
 		curr = curr->less;
 	}
@@ -116,10 +123,7 @@ void Bergnum::normalise()
 // increment by 1
 void Bergnum::inc()
 {
-	if (zero->multiplier) {
-		decompose(zero);
-	}
-	zero->multiplier = true;
+	++(zero->multiplier);
 	normalise();
 }
 
@@ -240,16 +244,50 @@ void Bergnum::myprint(mylist* curr)
 	}
 }
 
-void Bergnum::isValid() 
+void Bergnum::isValid() const
 {
 	int greatestToFibonacci;
 	mylist* current = start;
 
 }
 
-Bergnum operator+(const Bergnum& a, const Bergnum& b)
+Bergnum operator + (const Bergnum& a, const Bergnum& b)
 {
-	return Bergnum(a.toInt() + b.toInt());
+	Bergnum result;
+	mylist* currResult;
+	mylist* currOperated;
+
+
+	// setting pointers to start of borh numbers
+	if (a.start->power >= b.start->power) {
+		result = Bergnum(a);
+		currOperated = b.start;
+	}
+	else {
+		result = Bergnum(b);
+		currOperated = a.start;
+	}
+	currResult = result.start;
+
+	// moving pointer to the same power
+	while (currResult->power != currOperated->power) {
+		cout << endl;
+		currResult = currResult->less;
+		if (!currOperated) {
+			cout << "Mistake in plus operation\n";
+			exit(0);
+		}
+	}
+
+	// arithmetical addition/*
+	while (currOperated) {
+		currResult->multiplier += currOperated->multiplier;
+		currOperated = currOperated->less;
+		currResult = currResult->less;
+	}
+	cout << result;
+	result.normalise();
+	return result;
 }
 
 Bergnum operator-(const Bergnum& a, const Bergnum& b)
@@ -259,8 +297,38 @@ Bergnum operator-(const Bergnum& a, const Bergnum& b)
 		cout << "Negative numbers are not supported" << endl
 			 << "You'll get ZERO!" << endl;
 		return Bergnum(0);
+	}	
+	
+	Bergnum result;
+	mylist* currResult;
+	mylist* currOperated;
+
+
+	// setting pointers to start of borh numbers
+	result = Bergnum(a);
+	currOperated = b.start;
+	currResult = result.start;
+
+
+	// moving pointer to the same power
+	while (currResult->power != currOperated->power) {
+		cout << endl;
+		currResult = currResult->less;
+		if (!currOperated) {
+			cout << "Mistake in minus operation\n";
+			exit(0);
+		}
 	}
-	return Bergnum(a.toInt() - b.toInt());
+
+	// arithmetical addition/*
+	while (currOperated) {
+		currResult->multiplier -= currOperated->multiplier;
+		currOperated = currOperated->less;
+		currResult = currResult->less;
+	}
+	cout << result;
+	result.normalise();
+	return result;
 	
 }
 
@@ -272,4 +340,45 @@ Bergnum operator*(const Bergnum& a, const Bergnum& b)
 Bergnum operator/(const Bergnum& a, const Bergnum& b)
 {
 	return Bergnum(a.toInt() / b.toInt());
+}
+
+
+const Bergnum Bergnum::plus(const Bergnum& a, const Bergnum& b)
+{
+	
+	Bergnum result;
+	mylist* currResult;
+	mylist* currOperated; 
+
+
+	// setting pointers to start of borh numbers
+	if (a.start->power >= b.start->power) {
+		result = Bergnum(a);
+		currOperated = b.start;
+	}
+	else {
+		result = Bergnum(b);
+		currOperated = a.start;
+	}
+	currResult = result.start;
+
+	// moving pointer to the same power
+ 	while (currResult->power != currOperated->power) {
+		cout << endl;
+		currResult = currResult->less;
+		if (!currOperated) {
+			cout << "Mistake in plus operation\n";
+			exit(0);
+		}
+	}
+
+	// arithmetical addition/*
+	while (currOperated) {
+		currResult->multiplier += currOperated->multiplier;
+		currOperated = currOperated->less;
+		currResult = currResult->less;
+	}
+	cout << result;
+	result.normalise();
+	return result;
 }

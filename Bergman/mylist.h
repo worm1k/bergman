@@ -13,7 +13,7 @@ struct mylist
 		more = 0;
 		less = 0;
 		power = 0;
-		multiplier = false;
+		multiplier = 0;
 	}
 
 	// deprived 
@@ -30,7 +30,7 @@ struct mylist
 	mylist(int newLeft, mylist* right) {
 		less = right;
 		power = right->power + 1;
-		multiplier = false;
+		multiplier = 0;
 		more = 0;
 	}
 
@@ -39,7 +39,7 @@ struct mylist
 	mylist(mylist* left, int newRight) {
 		more = left;
 		power = left->power - 1;
-		multiplier = false;
+		multiplier = 0;
 		less = 0;
 	}
 };
