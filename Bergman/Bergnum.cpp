@@ -68,7 +68,7 @@ void Bergnum::normalise()
 		
 		// 0 2 0 0 -> 1 0 0 1
 		if (curr->multiplier > 1) {
-			cout << " 0 2 0 0 -> 1 0 0 1" << endl;
+			//cout << " 0 2 0 0 -> 1 0 0 1" << endl;
 			if (!curr->more) { // • 2
 				curr->more = new mylist(0, curr);
 				start = curr->more;
@@ -87,7 +87,7 @@ void Bergnum::normalise()
 
 		// 0 -1 0 -> -1 0 1
 		if (curr->multiplier < 0) {
-			cout << " 0 -1 0 -> -1 0 1" << endl;
+			//cout << " 0 -1 0 -> -1 0 1" << endl;
 			if (!curr->more) { // • -1 
 				cout << "Invalid number error\n";
 				exit(0);
@@ -104,7 +104,7 @@ void Bergnum::normalise()
 		// 0 1 1 -> 1 0 0
 		if (curr->multiplier > 0 && curr->less) {
 			if (curr->less->multiplier > 0) {
-				cout << " 0 1 1 -> 1 0 0" << endl;
+				//cout << " 0 1 1 -> 1 0 0" << endl;
 				if (!curr->more) { // • 1 1
 					curr->more = new mylist(0, curr);
 					start = curr->more;
@@ -127,7 +127,7 @@ void Bergnum::inc()
 	normalise();
 }
 
-int Bergnum::fibonacci(const int n) {
+int Bergnum::fibonacci(const int n) const {
 	if (n == 0) {
 		return 0;
 	}
@@ -190,6 +190,54 @@ int Bergnum::toInt() const
 	return res;
 }
 
+int Bergnum::isValid() const
+{
+
+
+	int positiveFib(0);
+	int negativeFib(0);
+
+	for (mylist* current = zero->more; current; current = current->more) {
+		for (int i = 0; i < current->multiplier; ++i) {
+			positiveFib += fibonacci(current->power);
+		}
+	}
+
+	for (mylist* current = zero->less; current; current = current->less) {
+		for (int i = 0; i < current->multiplier; ++i) {
+			negativeFib += fibonacci(current->power);
+		}
+	}
+
+	return positiveFib + negativeFib;
+}
+
+// very useful func
+// but deprived...
+void Bergnum::myprint(mylist* curr) const
+{
+	for (;;) {
+		//os << curr->multiplier;
+		cout << " bool: " << curr->multiplier << endl
+			<< "power: " << curr->power << endl
+			//<< " more: " << curr->more << endl
+			<< "  ptr: " << curr << endl
+			<< " less: " << curr->less << endl
+			<< "=============================\n";
+		if (curr->power == 0) {
+			cout << '.';
+			if (!curr->less) {
+				cout << '0';
+			}
+		}
+		curr = curr->less;
+		if (!curr) {
+			cout << endl << "Bergnum printed" << endl;
+			break;
+		}
+	}
+}
+
 ostream& operator<<(ostream &os, const Bergnum &u)
 {
 	mylist* curr = u.start;
@@ -218,40 +266,7 @@ ostream& operator<<(ostream &os, const Bergnum &u)
 	return os;
 }
 
-// very useful func
-// but deprived...
-void Bergnum::myprint(mylist* curr)
-{
-	for (;;) {
-		//os << curr->multiplier;
-		cout << " bool: " << curr->multiplier << endl
-			<< "power: " << curr->power << endl
-			//<< " more: " << curr->more << endl
-			<< "  ptr: " << curr << endl
-			<< " less: " << curr->less << endl
-			<< "=============================\n";
-		if (curr->power == 0) {
-			cout << '.';
-			if (!curr->less) {
-				cout << '0';
-			}
-		}
-		curr = curr->less;
-		if (!curr) {
-			cout << endl << "Bergnum printed" << endl;
-			break;
-		}
-	}
-}
-
-void Bergnum::isValid() const
-{
-	int greatestToFibonacci;
-	mylist* current = start;
-
-}
-
-Bergnum operator + (const Bergnum& a, const Bergnum& b)
+const Bergnum operator+(const Bergnum& a, const Bergnum& b)
 {
 	Bergnum result;
 	mylist* currResult;
@@ -290,7 +305,7 @@ Bergnum operator + (const Bergnum& a, const Bergnum& b)
 	return result;
 }
 
-Bergnum operator-(const Bergnum& a, const Bergnum& b)
+const Bergnum operator-(const Bergnum& a, const Bergnum& b)
 {
 
 	if (b.toInt() > a.toInt()) {
@@ -340,45 +355,4 @@ Bergnum operator*(const Bergnum& a, const Bergnum& b)
 Bergnum operator/(const Bergnum& a, const Bergnum& b)
 {
 	return Bergnum(a.toInt() / b.toInt());
-}
-
-
-const Bergnum Bergnum::plus(const Bergnum& a, const Bergnum& b)
-{
-	
-	Bergnum result;
-	mylist* currResult;
-	mylist* currOperated; 
-
-
-	// setting pointers to start of borh numbers
-	if (a.start->power >= b.start->power) {
-		result = Bergnum(a);
-		currOperated = b.start;
-	}
-	else {
-		result = Bergnum(b);
-		currOperated = a.start;
-	}
-	currResult = result.start;
-
-	// moving pointer to the same power
- 	while (currResult->power != currOperated->power) {
-		cout << endl;
-		currResult = currResult->less;
-		if (!currOperated) {
-			cout << "Mistake in plus operation\n";
-			exit(0);
-		}
-	}
-
-	// arithmetical addition/*
-	while (currOperated) {
-		currResult->multiplier += currOperated->multiplier;
-		currOperated = currOperated->less;
-		currResult = currResult->less;
-	}
-	cout << result;
-	result.normalise();
-	return result;
 }

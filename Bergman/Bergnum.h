@@ -11,7 +11,7 @@ private:
 	void normalise();
 	void decompose(mylist*) const;
 public:
-	int fibonacci(const int);
+	int fibonacci(const int) const;
 	// ptr to number with the highest power
 	mylist* start;
 
@@ -27,18 +27,20 @@ public:
 	~Bergnum() {};
 
 	// print function
-	void myprint(mylist* curr);
+	void myprint(mylist* curr) const;
 
 	// returns int value
 	int toInt() const;
 
 	// f-function check
-	void isValid() const;
+	// return 0 if valid
+	int isValid() const;
 
 	// a + b
-	const Bergnum plus(const Bergnum&, const Bergnum&);
-	Bergnum friend operator+(const Bergnum&, const Bergnum&);
-	Bergnum friend operator-(const Bergnum&, const Bergnum&);
+	const Bergnum friend operator+(const Bergnum&, const Bergnum&);
+
+	// a - b
+	const Bergnum friend operator-(const Bergnum&, const Bergnum&);
 };
 
 ostream& operator<<(ostream &, const Bergnum &);
