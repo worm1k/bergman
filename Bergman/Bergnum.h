@@ -28,7 +28,7 @@ public:
 	~Bergnum() {};
 
 	// print function
-	void myprint(mylist* curr) const;
+	static void myprint(mylist* curr);
 
 	// returns int value
 	int toInt() const;
@@ -43,7 +43,7 @@ public:
 	// a - b
 	const Bergnum friend operator-(const Bergnum&, const Bergnum&);
 
-	Bergnum& inputBergnum();
+	static Bergnum inputBergnum();
 
 	const Bergnum multiply(const Bergnum&, const Bergnum&) const;
 };

@@ -24,6 +24,9 @@ Bergnum::Bergnum(const Bergnum& u)
 	mylist* orig = u.start;
 	start = new mylist(0, 0, orig->power, orig->multiplier);
 	mylist* curr = start;
+	if (curr->power == 0) {
+		zero = curr;
+	}
 
 	for (;;) {
 		if (!orig->less) {
@@ -47,22 +50,20 @@ Bergnum::Bergnum(mylist* list)
 	mylist* currentFrom = list;
 	start = new mylist(0, 0, currentFrom->power, currentFrom->multiplier);
 	mylist* currentTo = start;
-
-	cout << "StartFrom: "; myprint(currentFrom);
-	cout << "StartTo"; myprint(currentTo);
+	if (currentTo->power == 0) {
+		zero = currentTo;
+	}
 
 	for (currentFrom = currentFrom->less; currentFrom; currentFrom = currentFrom->less) {
-
+		
 		currentTo->less = new mylist(currentTo, 0);
 		currentTo = currentTo->less;
 		currentTo->multiplier = currentFrom->multiplier;
 		currentTo->power = currentFrom->power;
-
 		if (currentTo->power == 0) {
 			zero = currentTo;
 		}
-		cout << "StartFrom: "; myprint(currentFrom);
-		cout << "StartTo"; myprint(start);
+		
 	}
 	if (isNotValid()) {
 		cout << "Warning: not valid Bergman number constructed" << endl;
@@ -178,6 +179,8 @@ int Bergnum::toInt() const
 {
 	// can't touch *this 
 	Bergnum b(*this);
+	myprint(b.start);
+	myprint(b.zero);
 	b.normalise();
 	mylist* curr;
 	// Access to zero by local var, not by object
@@ -223,12 +226,12 @@ int Bergnum::toInt() const
 
 int Bergnum::isNotValid() const
 {
-
-
 	int positiveFib(0);
 	int negativeFib(0);
-
-	for (mylist* current = zero->more; current; current = current->more) {
+	if (!zero) {
+		return 1;
+	}
+	for (mylist* current = zero; current; current = current->more) {
 		for (int i = 0; i < current->multiplier; ++i) {
 			positiveFib += fibonacci(current->power);
 		}
@@ -245,7 +248,7 @@ int Bergnum::isNotValid() const
 
 // very useful func
 // but deprived...
-void Bergnum::myprint(mylist* curr) const
+void Bergnum::myprint(mylist* curr)
 {
 	for (;;) {
 		//os << curr->multiplier;
@@ -255,15 +258,9 @@ void Bergnum::myprint(mylist* curr) const
 			<< "  ptr: " << curr << endl
 			<< " less: " << curr->less << endl
 			<< "=============================\n";
-		if (curr->power == 0) {
-			cout << '.';
-			if (!curr->less) {
-				cout << '0';
-			}
-		}
 		curr = curr->less;
 		if (!curr) {
-			cout << endl << "Bergnum printed" << endl;
+			cout << "Bergnum printed" << endl << endl;
 			break;
 		}
 	}
@@ -390,5 +387,6 @@ Bergnum operator/(const Bergnum& a, const Bergnum& b)
 
 const Bergnum Bergnum::multiply(const Bergnum& a, const Bergnum& b) const 
 {
+	// http://www.itlab.unn.ru/Uploads/coaChapter06.pdf
 	return Bergnum(0);
 }

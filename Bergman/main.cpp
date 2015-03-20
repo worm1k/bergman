@@ -5,9 +5,9 @@
 using namespace std;
 
 void menu();
-Bergnum& inputBergnumInt();
-//const Bergnum operate(const Bergnum& a, const Bergnum& b, const char op);
-//char inputOperator();
+Bergnum inputBergnumInt();
+const Bergnum operate(const Bergnum& a, const Bergnum& b, const char op);
+char inputOperator();
 
 int main(int argc, char** argv) 
 {
@@ -20,15 +20,12 @@ int main(int argc, char** argv)
 }
 
 void menu() {
-	
-	
-	bool i(0);
-	i = -1;
-	cout << i;
+
 	int choose;
 	Bergnum useless(0);
 	Bergnum a;
 	Bergnum b;
+	char op;
 	while (true) {
 		cout << endl
 			<< "=================================" << endl
@@ -36,7 +33,8 @@ void menu() {
 			<< "choose your action:" << endl << endl
 			<< "1. Plus / Minus / Multiply / Division" << endl
 			<< "2. Validate the number" << endl
-			<< "3. Exit" << endl;
+			<< "3. Exit" << endl
+			<< "> ";
 		cin >> choose;
 		switch (choose) {
 		case 1:
@@ -44,16 +42,18 @@ void menu() {
 			b = inputBergnumInt();
 
 			cout << a << endl << b << endl;
-			//char op = inputOperator();
-			//cout << operate(a, b, op);
+			op = inputOperator();
+			cout << "Result: " << operate(a, b, op) << endl;
 			break;
 		case 2:
-			a = useless.inputBergnum();
-			cout << "validation" << a.isNotValid();
+			a = Bergnum::inputBergnum();
+			cout << a;
+			if (!a.isNotValid()) {
+				cout << "Congratulations!! Your number is valid" << endl;
+			}
 			break;
 		case 3:
-			cout<< Bergnum(5).isNotValid() << endl;
-			cout << Bergnum(Bergnum(5).start) << endl;
+			exit(0);
 			break;
 		default:
 			cout << "Choose correct action" << endl;
@@ -62,50 +62,100 @@ void menu() {
 	}
 }
 
-Bergnum& inputBergnumInt() {
-	cout << "Input Integer to convert it to Bergnum" << endl;
+Bergnum inputBergnumInt() {
+	cout << "Input Integer to convert it to Bergnum" << endl
+		<< "> ";
 	int myInt;
 	cin >> myInt;
-	Bergnum myBerg(myInt);
-	return myBerg;
+	return Bergnum(myInt);
 }
 
-Bergnum& Bergnum::inputBergnum() {
-	cout << "Input Bergnum" << endl;
+Bergnum Bergnum::inputBergnum() {
+	cout << "Input Bergnum:" << endl
+		<< "> ";
 	string mystring;
 	cin >> mystring;
 
-	int indexOfZeroPower(0);
-	for (int i = 0; i < mystring.length(); ++i) {
+	int indexOfDot(mystring.length());
+	bool isDotExist = false;
+
+	// check input
+	for (size_t i = 0; i < mystring.length(); ++i) {
+		// check the only dot
 		if (mystring[i] == '.') {
-			indexOfZeroPower = i-1;
-			break;
+			if (!isDotExist) {
+				isDotExist = true;
+				indexOfDot = i;
+			}
+			else {
+				cout << "Input only ONE dot" << endl;
+				return Bergnum(0);
+			}
+		}
+		// check correct symbols
+		if ( (mystring[i] != '.') && (mystring[i] != '0') && (mystring[i] != '1')) {
+			cout << "Input number must contain only '0', '1' and '.'" << endl;
+			return Bergnum(0);
 		}
 	}
-	cout << "Index of zero: " << indexOfZeroPower << endl;
 
-	//Bergnum result(0);
-	//cout << "Bergman: " << result << endl;
-	//result.start->multiplier = mystring[indexOfZeroPower];
-	//cout << "mystring[i]: " << mystring[indexOfZeroPower] << endl;
-	//cout << "Bergman: " << result << endl;
-	//for (int i = indexOfZeroPower; i >= 0; --i) {/*
-	//	result.start->more = new mylist(0, result.start);
-	//	result.start->more->multiplier = mystring[i];
-	//	result.start = result.start->more;*/
-	//	cout << "mystring[i]: " << mystring[i]<<endl;
-	//	cout << "1Bergman: " << result << endl;
+	mylist* result;
+	if (indexOfDot == 0) {
+		result = new mylist();
+	}
+	else {
+		result = new mylist(0, 0, indexOfDot - 1, 0);
+	}
+	mylist* resultStart = result;
 
-	//}
+	if (mystring[0] == '1') {
+		result->multiplier = 1;
+	}
 
-	//mylist* current = result.zero;
-	//for (int i = indexOfZeroPower+2; i < mystring.length(); ++i) {/*
-	//	current->less = new mylist(current, 0);
-	//	current->less->multiplier = mystring[i];
-	//	current = current->less;*/
-	//	cout << "mystring[i]: " << mystring[i] << endl;
-	//	cout << "2Bergman: " << result << endl;
-	//}
-	//cout << "3Bergman: " << result << endl;
-	return result;
+
+	for (size_t i = 1; i < mystring.length(); ++i) {
+		if (i == indexOfDot) {
+			continue;
+		}
+		result->less = new mylist(result, 0);
+		if (mystring[i] == '1') {
+			result->less->multiplier = 1;
+		}
+		result = result->less;
+	}
+
+	return Bergnum(resultStart);
+}
+
+char inputOperator()
+{
+	char op;
+	cout << "Enter operator '+' or '-' or '*' or '/'" << endl
+		<< "> ";
+	cin >> op;
+	
+	return op;
+}
+
+const Bergnum operate(const Bergnum& a, const Bergnum& b, const char op) 
+{
+	switch (op) {
+	case '+':
+		return a + b;
+		break;
+	case '-':
+		return a - b;
+		break;
+	case '*':
+		return a * b;
+		break;
+	case '/':
+		return a / b;
+		break;
+	default:
+		cout << "Wrong operator" << endl;
+		return Bergnum(0);
+		break;
+
+	}
 }
