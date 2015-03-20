@@ -18,11 +18,11 @@ struct mylist
 
 	// deprived 
 	// only for debugging
-	mylist(mylist* a, mylist* b, int pow, bool c) {
+	mylist(mylist* a, mylist* b, int pow, int multipl) {
 		more = a;
 		less = b;
 		power = pow;
-		multiplier = c;
+		multiplier = multipl;
 	}
 
 	// int value is useless

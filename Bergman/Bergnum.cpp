@@ -38,6 +38,37 @@ Bergnum::Bergnum(const Bergnum& u)
 	}
 }
 
+Bergnum::Bergnum(mylist* list)
+{
+	if (!list) {
+		cout << "Invalid pointer in Constructor Bergnum(mylist* )" << endl;
+		exit(0);
+	}
+	mylist* currentFrom = list;
+	start = new mylist(0, 0, currentFrom->power, currentFrom->multiplier);
+	mylist* currentTo = start;
+
+	cout << "StartFrom: "; myprint(currentFrom);
+	cout << "StartTo"; myprint(currentTo);
+
+	for (currentFrom = currentFrom->less; currentFrom; currentFrom = currentFrom->less) {
+
+		currentTo->less = new mylist(currentTo, 0);
+		currentTo = currentTo->less;
+		currentTo->multiplier = currentFrom->multiplier;
+		currentTo->power = currentFrom->power;
+
+		if (currentTo->power == 0) {
+			zero = currentTo;
+		}
+		cout << "StartFrom: "; myprint(currentFrom);
+		cout << "StartTo"; myprint(start);
+	}
+	if (isNotValid()) {
+		cout << "Warning: not valid Bergman number constructed" << endl;
+	}
+}
+
 
 // 1 0 0 -> 0 1 1
 void Bergnum::decompose(mylist* curr) const
@@ -190,7 +221,7 @@ int Bergnum::toInt() const
 	return res;
 }
 
-int Bergnum::isValid() const
+int Bergnum::isNotValid() const
 {
 
 
@@ -243,7 +274,7 @@ ostream& operator<<(ostream &os, const Bergnum &u)
 	mylist* curr = u.start;
 	for (;;) {
 		os << curr->multiplier; 
-		/*
+		/* for debug
 		os << " bool: " << curr->multiplier << endl
 			<< "power: " << curr->power << endl
 			//<< " more: " << curr->more << endl
@@ -355,4 +386,9 @@ Bergnum operator*(const Bergnum& a, const Bergnum& b)
 Bergnum operator/(const Bergnum& a, const Bergnum& b)
 {
 	return Bergnum(a.toInt() / b.toInt());
+}
+
+const Bergnum Bergnum::multiply(const Bergnum& a, const Bergnum& b) const 
+{
+	return Bergnum(0);
 }

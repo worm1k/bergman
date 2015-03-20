@@ -22,6 +22,7 @@ public:
 	Bergnum();
 	Bergnum(const int);
 	Bergnum(const Bergnum&);
+	Bergnum(mylist*);
 
 	// Destructor
 	~Bergnum() {};
@@ -34,13 +35,17 @@ public:
 
 	// f-function check
 	// return 0 if valid
-	int isValid() const;
+	int isNotValid() const;
 
 	// a + b
 	const Bergnum friend operator+(const Bergnum&, const Bergnum&);
 
 	// a - b
 	const Bergnum friend operator-(const Bergnum&, const Bergnum&);
+
+	Bergnum& inputBergnum();
+
+	const Bergnum multiply(const Bergnum&, const Bergnum&) const;
 };
 
 ostream& operator<<(ostream &, const Bergnum &);
